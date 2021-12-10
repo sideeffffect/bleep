@@ -13,9 +13,7 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            jobType: 1
           - os: macos-latest
-            jobType: 1
     runs-on: ${{matrix.os}}
     if: "!contains(github.event.head_commit.message, 'ci skip')"
     steps:
@@ -28,15 +26,22 @@ jobs:
         with:
           java-version: graalvm-ce-java11@21.1.0
       - name: Scalafmt Check
-        if: ${{matrix.jobType == 1}}
+        if: ${{ matrix.os != 'windows-latest' }}
         shell: bash
         run: sbt --client scalafmtCheckAll
       - name: "Test"
         shell: bash
         run: sbt --client "test"
       - name: "Native image"
+        if: ${{ matrix.os != 'windows-latest' }}
         shell: bash
         run: sbt --client nativeImage
+      - name:  "Native image"
+        shell: cmd
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: >-
+          "C:\Program Files (x86)\Microsoft Visual
+          Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat" && sbt nativeImage
       - name: Cleanup before cache
         shell: bash
         run: |
