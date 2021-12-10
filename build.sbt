@@ -1,7 +1,5 @@
 name := "bleep-root"
 
-//Global / bloopConfigDir := baseDirectory.value / s".bleep/import/bloop-${scalaBinaryVersion.value}"
-
 val commonSettings: Project => Project =
   _.enablePlugins(GitVersioning, TpolecatPlugin)
     .settings(
@@ -51,14 +49,13 @@ lazy val `bloop-rifle` =
         "me.vican.jorge" %% "snailgun-core" % "0.4.0",
         "ch.epfl.scala" %% "bloop-config" % "1.4.11",
         "com.github.alexarchambault.tmp.ipcsocket" % "ipcsocket" % "1.4.1-aa-4",
-        "org.graalvm.nativeimage" % "svm" % "20.2.0"
+        "org.graalvm.nativeimage" % "svm" % "21.1.0"
       )
     )
 
 lazy val bleep = project
   .configure(commonSettings)
   .dependsOn(`bleep-core`, `bloop-rifle`)
-  .enablePlugins(NativeImagePlugin)
   .settings(
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % "3.2.10" % Test,
@@ -66,8 +63,12 @@ lazy val bleep = project
       "com.monovore" %% "decline" % "2.2.0",
       "com.lihaoyi" %% "pprint" % "0.7.1"
     ),
-    Compile / mainClass := Some("bleep.Main")
+    Compile / mainClass := Some("bleep.Main"),
+    nativeImageJvmIndex := "jabba",
+    nativeImageJvm := "graalvm-ce-java11",
+    nativeImageVersion := "21.1.0"
   )
+  .enablePlugins(NativeImagePlugin)
 
 lazy val infrastructure = project
   .dependsOn(bleep, `bleep-tasks`)
