@@ -33,11 +33,11 @@ jobs:
       - name: "Test"
         shell: bash
         run: sbt --client "test"
-      - name: "Native image"
+      - name: "Native image (Unix)"
         if: ${{ matrix.os != 'windows-latest' }}
         shell: bash
         run: sbt --client nativeImage
-      - name:  "Native image"
+      - name:  "Native image (Windows)"
         shell: cmd
         if: ${{ matrix.os == 'windows-latest' }}
         run: >-
