@@ -1,0 +1,55 @@
+name: Release
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  test:
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            type: 1
+          - os: macos-latest
+            type: 1
+    runs-on: ${{matrix.os}}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - uses: coursier/cache-action@v6
+      - name: Set up JDK
+        uses: olafurpg/setup-scala@v11
+        with:
+          java-version: graalvm-ce-java11@21.1.0
+      - name: "Test"
+        shell: bash
+        run: sbt --client "test"
+      - name: "Native image"
+        shell: bash
+        run: sbt --client nativeImage
+      - name: Upload to Release Action (Unix)
+        if: ${{matrix.type == 1}}
+        uses: Shopify/upload-to-release@v1.0.1
+        with:
+          name: bleep-${{ runner.os }}-${{ runner.arch }}
+          path: target/native-image/bleep
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+#      - name: Upload to Release Action (Windows)
+#        if: ${{matrix.type == 2}}
+#        uses: Shopify/upload-to-release@v1.0.1
+#        with:
+#          name: bleep-${{ runner.os }}-${{ runner.arch }}.exe
+#          path: target/native-image/bleep
+#          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Cleanup before cache
+        shell: bash
+        run: |
+          rm -rf "$HOME/.ivy2/local" || true
+          find $HOME/Library/Caches/Coursier/v1        -name "ivydata-*.properties" -delete || true
+          find $HOME/.ivy2/cache                       -name "ivydata-*.properties" -delete || true
+          find $HOME/.cache/coursier/v1                -name "ivydata-*.properties" -delete || true
+          find $HOME/.sbt                              -name "*.lock"               -delete || true      
