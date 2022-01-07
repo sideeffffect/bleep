@@ -1,4 +1,4 @@
-name: Build and Test
+name: Build
 on:
   push:
     branches: [ '*' ]
@@ -6,7 +6,7 @@ on:
     types: [ synchronize ]
 
 jobs:
-  test:
+  build:
     timeout-minutes: 15
     strategy:
       fail-fast: false
@@ -33,16 +33,21 @@ jobs:
       - name: "Test"
         shell: bash
         run: sbt --client "test"
+        if: ${{ matrix.os != 'windows-latest' }}
       - name: "Native image (Unix)"
         if: ${{ matrix.os != 'windows-latest' }}
         shell: bash
         run: sbt --client nativeImage
-#      - name:  "Native image (Windows)"
-#        shell: cmd
-#        if: ${{ matrix.os == 'windows-latest' }}
-#        run: >-
-#          "C:\Program Files (x86)\Microsoft Visual
-#          Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat" && sbt nativeImage
+      - name: "Test (Windows)"
+        shell: bash
+        run: sbt "test"
+        if: ${{ matrix.os == 'windows-latest' }}
+      - name:  "Native image (Windows)"
+        shell: cmd
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: >-
+          "C:\Program Files (x86)\Microsoft Visual
+          Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat" && sbt nativeImage
       - name: Cleanup before cache
         shell: bash
         run: |
