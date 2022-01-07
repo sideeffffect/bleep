@@ -92,9 +92,9 @@ jobs:
           "C:\Program Files (x86)\Microsoft Visual
           Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat" && native-image --enable-url-protocols=https -jar bleep-*.jar bleep-windows
         if: runner.os == 'Windows'
-      - name: Test binary after build
-        run: chmod u+x ./bleep-linux && ./bleep-linux compile
-        if: runner.os == 'Linux'
+#      - name: Test binary after build
+#        run: chmod u+x ./bleep-linux && ./bleep-linux compile
+#        if: runner.os == 'Linux'
       - name: Temporarily save package
         uses: actions/upload-artifact@v2
         with:
