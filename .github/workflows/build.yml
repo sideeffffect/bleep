@@ -59,9 +59,9 @@ jobs:
           - os: macos-latest
             file_name: bleep-macos
             artifact_name: macos-binary
-          - os: windows-latest
-            file_name: bleep-windows.exe
-            artifact_name: windows-binary
+#          - os: windows-latest
+#            file_name: bleep-windows.exe
+#            artifact_name: windows-binary
     steps:
       - uses: actions/checkout@v2
         with:
@@ -82,18 +82,18 @@ jobs:
       - name: Build native image on Mac OS X
         run: native-image --enable-url-protocols=https -jar bleep-*.jar ${{ matrix.file_name }} && chmod 755 ${{ matrix.file_name }}
         if: runner.os == 'macOS'
-      - name: Build native image on Windows
-        run: >-
-          "C:\Program Files (x86)\Microsoft Visual
-          Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat" && native-image --enable-url-protocols=https -jar bleep-*.jar ${{ matrix.file_name }}
-        if: runner.os == 'Windows'
+#      - name: Build native image on Windows
+#        run: >-
+#          "C:\Program Files (x86)\Microsoft Visual
+#          Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat" && native-image --enable-url-protocols=https -jar bleep-*.jar ${{ matrix.file_name }}
+#        if: runner.os == 'Windows'
       - name: Test binary after build *Nix
         run: ./${{ matrix.file_name }} compile
         if: runner.os != 'Windows'
-      - name: Test binary after build Windows
-        shell: cmd
-        run: ${{ matrix.file_name }} compile
-        if: runner.os == 'Windows'
+#      - name: Test binary after build Windows
+#        shell: cmd
+#        run: ${{ matrix.file_name }} compile
+#        if: runner.os == 'Windows'
       - name: Temporarily save package
         uses: actions/upload-artifact@v2
         with:
