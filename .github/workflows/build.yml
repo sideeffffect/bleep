@@ -91,6 +91,7 @@ jobs:
         run: ./${{ matrix.file_name }} compile
         if: runner.os != 'Windows'
       - name: Test binary after build Windows
+        shell: cmd
         run: ${{ matrix.file_name }} compile
         if: runner.os == 'Windows'
       - name: Temporarily save package
