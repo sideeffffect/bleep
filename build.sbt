@@ -63,7 +63,7 @@ lazy val bleep = project
       "org.scalameta" % "svm-subs" % "101.0.0",
       "com.monovore" %% "decline" % "2.2.0",
       "com.lihaoyi" %% "pprint" % "0.7.1",
-      "org.graalvm.nativeimage" % "svm" % "21.1.0"
+      "org.graalvm.nativeimage" % "svm" % "21.1.0" % "provided"
     ),
     Compile / mainClass := Some("bleep.Main"),
     nativeImageJvmIndex := "jabba",
