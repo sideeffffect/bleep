@@ -82,7 +82,7 @@ jobs:
           components: 'native-image'
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Build native image on Linux
-        run: native-image --enable-url-protocols=https --static -jar bleep-*.jar bleep-linux
+        run: native-image --enable-url-protocols=https -jar bleep-*.jar bleep-linux
         if: runner.os == 'Linux'
       - name: Build native image on Mac OS X
         run: native-image --enable-url-protocols=https -jar bleep-*.jar bleep-macos
@@ -93,7 +93,7 @@ jobs:
           Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat" && native-image --enable-url-protocols=https -jar bleep-*.jar bleep-windows
         if: runner.os == 'Windows'
       - name: Test binary after build
-        run: chmod u+x ./bleep-linux && (cd .. && ./bleep-linux compile)
+        run: chmod u+x ./bleep-linux && ./bleep-linux compile
         if: runner.os == 'Linux'
       - name: Temporarily save package
         uses: actions/upload-artifact@v2
