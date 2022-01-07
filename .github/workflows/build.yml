@@ -60,7 +60,7 @@ jobs:
             file_name: bleep-macos
             artifact_name: macos-binary
           - os: windows-latest
-            file_name: bleep-windows
+            file_name: bleep-windows.exe
             artifact_name: windows-binary
     steps:
       - uses: actions/checkout@v2
