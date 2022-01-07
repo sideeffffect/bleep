@@ -37,12 +37,12 @@ jobs:
         if: ${{ matrix.os != 'windows-latest' }}
         shell: bash
         run: sbt --client nativeImage
-      - name:  "Native image (Windows)"
-        shell: cmd
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: >-
-          "C:\Program Files (x86)\Microsoft Visual
-          Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat" && sbt nativeImage
+#      - name:  "Native image (Windows)"
+#        shell: cmd
+#        if: ${{ matrix.os == 'windows-latest' }}
+#        run: >-
+#          "C:\Program Files (x86)\Microsoft Visual
+#          Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat" && sbt nativeImage
       - name: Cleanup before cache
         shell: bash
         run: |
