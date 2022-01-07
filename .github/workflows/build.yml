@@ -36,17 +36,6 @@ jobs:
           path: |
             ${{ github.workspace }}/bleep/target/bleep-assembly.jar
           retention-days: 1
-#      - name: "Native image (Unix)"
-#        if: ${{ matrix.os != 'windows-latest' }}
-#        shell: bash
-#        run: sbt --client nativeImage
-#      - name:  "Native image (Windows)"
-#        shell: cmd
-#        if: ${{ matrix.os == 'windows-latest' }}
-#        run: >-
-#          "C:\Program Files (x86)\Microsoft Visual
-#          Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat" && sbt nativeImage
-
       - name: Cleanup before cache
         shell: bash
         run: |
@@ -74,6 +63,9 @@ jobs:
             file_name: bleep-windows
             artifact_name: windows-binary
     steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
       - name: Download application package
         uses: actions/download-artifact@v2
         with:
@@ -95,9 +87,6 @@ jobs:
           "C:\Program Files (x86)\Microsoft Visual
           Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat" && native-image --enable-url-protocols=https -jar bleep-*.jar ${{ matrix.file_name }}
         if: runner.os == 'Windows'
-      - uses: actions/checkout@v2
-        with:
-          submodules: recursive
       - name: Test binary after build *Nix
         run: ./${{ matrix.file_name }} compile
         if: runner.os != 'Windows'
