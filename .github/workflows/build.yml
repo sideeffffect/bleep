@@ -33,21 +33,27 @@ jobs:
       - name: "Test"
         shell: bash
         run: sbt --client "test"
-        if: ${{ matrix.os != 'windows-latest' }}
-      - name: "Native image (Unix)"
-        if: ${{ matrix.os != 'windows-latest' }}
+      - name: "Assembly"
         shell: bash
-        run: sbt --client nativeImage
-      - name: "Test (Windows)"
-        shell: bash
-        run: sbt "test"
-        if: ${{ matrix.os == 'windows-latest' }}
-      - name:  "Native image (Windows)"
-        shell: cmd
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: >-
-          "C:\Program Files (x86)\Microsoft Visual
-          Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat" && sbt nativeImage
+        run: sbt --client "bleep/assembly"
+      - name: Temporarily save package
+        uses: actions/upload-artifact@v2
+        with:
+          name: java-binary
+          path: |
+            ${{ github.workspace }}/bleep/target/bleep-assembly.jar
+          retention-days: 1
+#      - name: "Native image (Unix)"
+#        if: ${{ matrix.os != 'windows-latest' }}
+#        shell: bash
+#        run: sbt --client nativeImage
+#      - name:  "Native image (Windows)"
+#        shell: cmd
+#        if: ${{ matrix.os == 'windows-latest' }}
+#        run: >-
+#          "C:\Program Files (x86)\Microsoft Visual
+#          Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat" && sbt nativeImage
+
       - name: Cleanup before cache
         shell: bash
         run: |
@@ -56,3 +62,48 @@ jobs:
           find $HOME/.ivy2/cache                       -name "ivydata-*.properties" -delete || true
           find $HOME/.cache/coursier/v1                -name "ivydata-*.properties" -delete || true
           find $HOME/.sbt                              -name "*.lock"               -delete || true
+
+  build-native-image:
+    name: Native image build on ${{ matrix.os }}
+    needs: [ build ]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact_name: linux-binary
+          - os: macos-latest
+            artifact_name: macos-binary
+          - os: windows-latest
+            artifact_name: windows-binary
+    steps:
+      - name: Download application package
+        uses: actions/download-artifact@v2
+        with:
+          name: java-binary
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          version: '21.3.0'
+          java-version: '11'
+          components: 'native-image'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build native image on Linux
+        run: native-image --enable-url-protocols=https --static -jar bleep-*.jar bleep-linux
+        if: runner.os == 'Linux'
+      - name: Build native image on Mac OS X
+        run: native-image --enable-url-protocols=https -jar bleep-*.jar bleep-macos
+        if: runner.os == 'macOS'
+      - name: Build native image on Windows
+        run: >-
+          "C:\Program Files (x86)\Microsoft Visual
+          Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat" && native-image --enable-url-protocols=https -jar bleep-*.jar bleep-windows
+        if: runner.os == 'Windows'
+      - name: Temporarily save package
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: |
+            bleep-*
+            !*.txt
+            !*.jar
+          retention-days: 1
