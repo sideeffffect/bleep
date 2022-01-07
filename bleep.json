@@ -2,7 +2,7 @@
   "projects" : {
     "bleep" : {
       "dependencies" : [
-        "com.lihaoyi::pprint:0.7.0",
+        "com.lihaoyi::pprint:0.7.1",
         "com.monovore::decline:2.2.0",
         "org.scalameta:svm-subs:101.0.0"
       ],
@@ -19,10 +19,11 @@
       "dependencies" : [
         "com.lihaoyi::fansi:0.3.0",
         "io.circe::circe-generic:0.14.1",
-        "io.get-coursier::coursier:2.0.16",
-        "net.harawata:appdirs:1.2.1",
-        "org.gnieh::diffson-circe:4.1.1",
-        "org.scala-lang:scala-reflect:2.13.7"
+        {
+          "for3Use213" : true,
+          "module" : "io.get-coursier::coursier:2.0.16"
+        },
+        "org.gnieh::diffson-circe:4.1.1"
       ],
       "extends" : "template-common-main"
     },
@@ -42,7 +43,9 @@
       "dependsOn" : "bleep",
       "extends" : "template-common",
       "folder" : "./bleep",
+      "resources" : "./target/resource_managed/test",
       "sbt-scope" : "test",
+      "sources" : "./target/src_managed/test",
       "testFrameworks" : [
         "com.novocode.junit.JUnitFramework",
         "munit.Framework",
@@ -57,21 +60,24 @@
     "bloop-rifle" : {
       "dependencies" : [
         "ch.epfl.scala:bsp4j:2.0.0",
-        "com.github.alexarchambault.tmp.ipcsocket:ipcsocket:1.4.1-aa-3",
+        "com.github.alexarchambault.tmp.ipcsocket:ipcsocket:1.4.1-aa-4",
         "com.google.code.findbugs:jsr305:3.0.2",
         "com.google.code.gson:gson:2.8.9",
         "com.google.errorprone:error_prone_annotations:2.2.0",
         "com.google.guava:guava:27.1-jre",
         "com.google.j2objc:j2objc-annotations:1.1",
-        "me.vican.jorge::snailgun-core:0.4.0",
+        {
+          "for3Use213" : true,
+          "module" : "me.vican.jorge::snailgun-core:0.4.0"
+        },
         "org.checkerframework:checker-qual:2.5.2",
         "org.codehaus.mojo:animal-sniffer-annotations:1.17",
-        "org.graalvm.nativeimage:svm:20.2.0",
-        "org.scala-lang:scala-library:2.13.7"
+        "org.graalvm.nativeimage:svm:21.1.0"
       ],
       "extends" : "template-common-main"
     },
     "infrastructure" : {
+      "dependencies" : "org.graalvm.nativeimage:svm:21.3.0",
       "dependsOn" : [
         "bleep",
         "bleep-tasks"
@@ -85,60 +91,38 @@
   },
   "templates" : {
     "template-common" : {
-      "dependencies" : "ch.epfl.scala::bloop-config:1.4.11",
+      "dependencies" : [
+        {
+          "for3Use213" : true,
+          "module" : "ch.epfl.scala::bloop-config:1.4.11"
+        },
+        "org.scala-lang::scala3-library:3.1.0"
+      ],
       "platform" : {
         "name" : "jvm"
       },
       "scala" : {
         "options" : [
-          "-Vimplicits",
-          "-Vtype-diffs",
-          "-Wdead-code",
-          "-Wextra-implicit",
-          "-Wnumeric-widen",
-          "-Wunused:explicits",
-          "-Wunused:implicits",
-          "-Wunused:imports",
-          "-Wunused:locals",
-          "-Wunused:nowarn",
-          "-Wunused:params",
-          "-Wunused:patvars",
-          "-Wunused:privates",
-          "-Wvalue-discard",
-          "-Xcheckinit",
-          "-Xlint:-byname-implicit",
-          "-Xlint:adapted-args",
-          "-Xlint:constant",
-          "-Xlint:delayedinit-select",
-          "-Xlint:deprecation",
-          "-Xlint:doc-detached",
-          "-Xlint:inaccessible",
-          "-Xlint:infer-any",
-          "-Xlint:missing-interpolator",
-          "-Xlint:nullary-unit",
-          "-Xlint:option-implicit",
-          "-Xlint:package-object-classes",
-          "-Xlint:poly-implicit-overload",
-          "-Xlint:private-shadow",
-          "-Xlint:stars-align",
-          "-Xlint:strict-unsealed-patmat",
-          "-Xlint:type-parameter-shadow",
+          "-Ykind-projector",
+          "-deprecation",
           "-encoding",
           "utf8",
-          "-explaintypes",
+          "-explain",
+          "-explain-types",
           "-feature",
-          "-language:existentials",
           "-language:experimental.macros",
           "-language:higherKinds",
           "-language:implicitConversions",
           "-unchecked"
         ],
-        "version" : "2.13.7"
+        "version" : "3.1.0"
       }
     },
     "template-common-main" : {
       "extends" : "template-common",
-      "sbt-scope" : "main"
+      "resources" : "./target/resource_managed/main",
+      "sbt-scope" : "main",
+      "sources" : "./target/src_managed/main"
     }
   },
   "version" : "1"

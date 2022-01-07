@@ -1,12 +1,18 @@
+import sbt.librarymanagement.For3Use2_13
+
 name := "bleep-root"
 
 val commonSettings: Project => Project =
   _.enablePlugins(GitVersioning, TpolecatPlugin)
     .settings(
       organization := "no.arktekk",
-      scalaVersion := "2.13.7",
+      scalaVersion := "3.1.0",
       scalacOptions -= "-Xfatal-warnings",
-      crossPaths := false
+      crossPaths := false,
+      excludeDependencies ++= List(
+        ExclusionRule("org.scala-lang.modules", "scala-collection-compat_2.13"),
+        ExclusionRule("org.scala-lang.modules", "scala-xml_3")
+      )
     )
 
 lazy val `bleep-core` = project
@@ -14,12 +20,12 @@ lazy val `bleep-core` = project
   .settings(
     libraryDependencies ++= Seq(
       "com.lihaoyi" %% "fansi" % "0.3.0",
-      "io.get-coursier" %% "coursier" % "2.0.16",
+      "io.get-coursier" %% "coursier" % "2.0.16" cross For3Use2_13(),
       "io.circe" %% "circe-core" % "0.14.1",
       "io.circe" %% "circe-parser" % "0.14.1",
       "io.circe" %% "circe-generic" % "0.14.1",
       "org.gnieh" %% "diffson-circe" % "4.1.1",
-      "ch.epfl.scala" %% "bloop-config" % "1.4.11"
+      "ch.epfl.scala" %% "bloop-config" % "1.4.11" cross For3Use2_13()
     )
   )
 
@@ -46,10 +52,10 @@ lazy val `bloop-rifle` =
     .settings(
       libraryDependencies ++= List(
         "ch.epfl.scala" % "bsp4j" % "2.0.0",
-        "me.vican.jorge" %% "snailgun-core" % "0.4.0",
-        "ch.epfl.scala" %% "bloop-config" % "1.4.11",
+        "me.vican.jorge" %% "snailgun-core" % "0.4.0" cross For3Use2_13(),
+        "ch.epfl.scala" %% "bloop-config" % "1.4.11" cross For3Use2_13(),
         "com.github.alexarchambault.tmp.ipcsocket" % "ipcsocket" % "1.4.1-aa-4",
-        "org.graalvm.nativeimage" % "svm" % "21.3.0" % "provided"
+        "org.graalvm.nativeimage" % "svm" % "21.1.0" % "provided"
       )
     )
 
@@ -62,12 +68,12 @@ lazy val bleep = project
       "org.scalameta" % "svm-subs" % "101.0.0",
       "com.monovore" %% "decline" % "2.2.0",
       "com.lihaoyi" %% "pprint" % "0.7.1",
-      "org.graalvm.nativeimage" % "svm" % "21.3.0"
+      "org.graalvm.nativeimage" % "svm" % "21.1.0"
     ),
     Compile / mainClass := Some("bleep.Main"),
     nativeImageJvmIndex := "jabba",
     nativeImageJvm := "graalvm-ce-java11",
-    nativeImageVersion := "21.3.0",
+    nativeImageVersion := "21.1.0",
     assemblyMergeStrategy := {
       case PathList(ps @ _*) if ps.last.endsWith("module-info.class") => MergeStrategy.discard
       case x =>
@@ -83,6 +89,6 @@ lazy val infrastructure = project
   .configure(commonSettings)
   .settings(
     libraryDependencies ++= Seq(
-      "ch.epfl.scala" %% "bloop-config" % "1.4.9"
+      "ch.epfl.scala" %% "bloop-config" % "1.4.9" cross For3Use2_13()
     )
   )
