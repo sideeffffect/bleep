@@ -50,7 +50,7 @@ lazy val `bloop-rifle` =
         "me.vican.jorge" %% "snailgun-core" % "0.4.0",
         "ch.epfl.scala" %% "bloop-config" % "1.4.11",
         "com.github.alexarchambault.tmp.ipcsocket" % "ipcsocket" % "1.4.1-aa-4",
-        "org.graalvm.nativeimage" % "svm" % "21.1.0" % "provided"
+        "org.graalvm.nativeimage" % "svm" % "21.3.0" % "provided"
       )
     )
 
@@ -63,12 +63,12 @@ lazy val bleep = project
       "org.scalameta" % "svm-subs" % "101.0.0",
       "com.monovore" %% "decline" % "2.2.0",
       "com.lihaoyi" %% "pprint" % "0.7.1",
-      "org.graalvm.nativeimage" % "svm" % "21.1.0" % "provided"
+      "org.graalvm.nativeimage" % "svm" % "21.3.0"
     ),
     Compile / mainClass := Some("bleep.Main"),
     nativeImageJvmIndex := "jabba",
     nativeImageJvm := "graalvm-ce-java11",
-    nativeImageVersion := "21.1.0",
+    nativeImageVersion := "21.3.0",
     assemblyMergeStrategy := {
       case PathList(ps @ _*) if ps.last.endsWith("module-info.class") => MergeStrategy.discard
       case x =>
